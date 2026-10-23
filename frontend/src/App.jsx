@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
 
-const API_URL = "http://127.0.0.1:8001/predict";
+const API_URL =
+  "https://ml-powered-stress-score-prediction.onrender.com/predict";
 
 function App() {
   const [formData, setFormData] = useState({
