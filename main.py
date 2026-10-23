@@ -428,3 +428,68 @@ def predict(data: PredictionRequest):
         )
 
 
+# OLLAMA AI WELLNESS CHATBOT
+
+
+import ollama
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000
+    )
+
+
+@app.post("/api/chat")
+def wellness_chat(data: ChatRequest):
+
+    try:
+        response = ollama.chat(
+            model="qwen2.5-coder:3b",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a friendly AI wellness chatbot "
+                        "for students in a stress prediction web "
+                        "application. Help with exam stress, study "
+                        "planning, relaxation, sleep habits, and "
+                        "healthy routines. Reply in simple English. "
+                        "Be empathetic, practical, and concise. "
+                        "Do not diagnose medical conditions or "
+                        "prescribe medication. Do not claim that "
+                        "chat messages can accurately measure stress. "
+                        "Encourage students to seek help from a "
+                        "trusted person or qualified professional "
+                        "when appropriate."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": data.message
+                }
+            ],
+            options={
+                "temperature": 0.5
+            }
+        )
+
+        return {
+            "reply": response["message"]["content"],
+            "model": "qwen2.5-coder:3b"
+        }
+
+    except Exception as e:
+        print("Chatbot Error:", str(e))
+
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "The AI chatbot is currently unavailable. "
+                "Please check that Ollama is running and "
+                "qwen2.5-coder:3b is installed."
+            )
+        )
+
